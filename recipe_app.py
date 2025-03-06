@@ -23,8 +23,7 @@ SHEET_NAME = "食材管理"
 WORKSHEET_NAME = "Stock"
 sheet = client.open(SHEET_NAME).worksheet(WORKSHEET_NAME)
 
-# 📌 データ取得
-@st.cache_data(ttl=60)
+# 📌 データ取得（キャッシュ無効化）
 def get_data():
     data = sheet.get_all_records()
     return pd.DataFrame(data)
@@ -43,25 +42,49 @@ def add_ingredient(name, quantity, category):
     quantity = int(quantity)  # `quantity` も `int` に変換
     new_row = [new_id, name, quantity, category]
     sheet.append_row(new_row)
+    st.rerun()  # ✅ 追加後に即座に更新
 
 # 📌 数量変更
 def update_quantity(item_id, quantity):
     df = get_data()
     df.loc[df["id"] == item_id, "quantity"] = int(quantity)  # `int64` → `int` に変換
     update_data(df)
+    st.rerun()  # ✅ 変更後に即座に更新
 
 # 📌 食材の削除
 def delete_ingredient(item_id):
     df = get_data()
     df = df[df["id"] != item_id]
     update_data(df)
+    st.rerun()  # ✅ 削除後に即座に更新
+
+# 📌 **CSS で入力欄を小さくする**
+st.markdown(
+    """
+    <style>
+        /* 🔹 入力欄を小さくする */
+        input[type="text"], select, input[type="number"] {
+            width: 80px !important; /* 🔹 幅を小さく */
+            height: 30px !important; /* 🔹 高さも調整 */
+            font-size: 14px !important; /* 🔹 文字サイズ */
+        }
+        /* 🔹 追加ボタンのサイズ調整 */
+        .stButton > button {
+            width: 60px !important;
+            height: 35px !important;
+            font-size: 14px !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # 📌 メイン画面（食品在庫管理）
 st.title("📦 食品在庫管理")
 
 df = get_data()
 
-# 📊 食材一覧表示（PC & スマホ対応）
+# 📊 **食材一覧表示**
 if not df.empty:
     for _, row in df.iterrows():
         col1, col2, col3 = st.columns([3, 1, 1])  # 🔹 数値入力欄をもっと小さく
@@ -69,7 +92,7 @@ if not df.empty:
         quantity = col2.number_input("", min_value=0, value=row["quantity"], key=f"qty_{row['id']}", label_visibility="collapsed")
         col3.button("❌", key=f"delete_{row['id']}", on_click=delete_ingredient, args=(row["id"],))
 
-# ➕ **食材追加（スマホ対応のためにサイズ調整）**
+# ➕ **食材追加**
 with st.form("add_ingredient_form", clear_on_submit=True):
     col1, col2, col3, col4 = st.columns([2.5, 2.5, 1, 1])  # 🔹 入力欄をさらにコンパクトに
     name = col1.text_input("", placeholder="食材名", max_chars=10, label_visibility="collapsed")
@@ -79,5 +102,3 @@ with st.form("add_ingredient_form", clear_on_submit=True):
 
     if submitted and name:
         add_ingredient(name, quantity, category)
-        st.success(f"✅ {name} を追加しました！")
-        st.rerun()
