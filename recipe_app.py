@@ -4,12 +4,27 @@ import json  # ← jsonをインポート
 from google.oauth2.service_account import Credentials
 import pandas as pd
 
+# # 🔑 Streamlit Secrets から Google 認証情報を取得
+# service_account_info = json.loads(st.secrets["GCP_CREDENTIALS"])
+# creds = Credentials.from_service_account_info(service_account_info)
+
+# # 📦 Google Sheets API に接続
+# client = gspread.authorize(creds)
+
 # 🔑 Streamlit Secrets から Google 認証情報を取得
 service_account_info = json.loads(st.secrets["GCP_CREDENTIALS"])
-creds = Credentials.from_service_account_info(service_account_info)
+
+# 🔹 **スコープを明示的に設定**
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive"
+]
+creds = Credentials.from_service_account_info(service_account_info, scopes=scope)
 
 # 📦 Google Sheets API に接続
 client = gspread.authorize(creds)
+
 
 # 📌 データ取得関数
 SHEET_NAME = "食材管理"
