@@ -7,7 +7,7 @@ import pandas as pd
 # 🔑 Streamlit Secrets から Google 認証情報を取得
 service_account_info = json.loads(st.secrets["GCP_CREDENTIALS"])
 
-# 🔹 **スコープを明示的に設定**
+# 🔹 スコープ設定
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -61,19 +61,19 @@ st.title("📦 食品在庫管理")
 
 df = get_data()
 
-# 📊 食材一覧表示
+# 📊 食材一覧表示（PC & スマホ対応）
 if not df.empty:
     for _, row in df.iterrows():
-        col1, col2, col3 = st.columns([4, 1, 1])  # 🔹 数値入力欄を小さくする
+        col1, col2, col3 = st.columns([3, 1, 1])  # 🔹 数値入力欄をもっと小さく
         col1.write(row["name"])
         quantity = col2.number_input("", min_value=0, value=row["quantity"], key=f"qty_{row['id']}", label_visibility="collapsed")
         col3.button("❌", key=f"delete_{row['id']}", on_click=delete_ingredient, args=(row["id"],))
 
-# ➕ 食材追加（スマホ対応のためにサイズ調整）
+# ➕ **食材追加（スマホ対応のためにサイズ調整）**
 with st.form("add_ingredient_form", clear_on_submit=True):
-    col1, col2, col3, col4 = st.columns([3, 2, 1, 1])  # 🔹 入力欄を小さくする
-    name = col1.text_input("", placeholder="食材名", label_visibility="collapsed")
-    category = col2.selectbox("", ["主食", "肉類", "野菜類", "その他"], placeholder="カテゴリ", label_visibility="collapsed")
+    col1, col2, col3, col4 = st.columns([2.5, 2.5, 1, 1])  # 🔹 入力欄をさらにコンパクトに
+    name = col1.text_input("", placeholder="食材名", max_chars=10, label_visibility="collapsed")
+    category = col2.selectbox("", ["主食", "肉類", "野菜類", "その他"], label_visibility="collapsed")
     quantity = col3.number_input("", min_value=1, value=1, label_visibility="collapsed")
     submitted = col4.form_submit_button("追加")
 
