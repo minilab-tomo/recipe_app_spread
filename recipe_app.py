@@ -64,15 +64,15 @@ st.markdown(
     <style>
         /* 🔹 入力欄を小さくする */
         input[type="text"], select, input[type="number"] {
-            width: 80px !important; /* 🔹 幅を小さく */
-            height: 30px !important; /* 🔹 高さも調整 */
+            max-width: 70px !important; /* 🔹 幅を小さく */
+            height: 30px !important; /* 🔹 高さ調整 */
             font-size: 14px !important; /* 🔹 文字サイズ */
         }
-        /* 🔹 追加ボタンのサイズ調整 */
+        /* 🔹 ボタンのサイズ調整 */
         .stButton > button {
-            width: 60px !important;
-            height: 35px !important;
-            font-size: 14px !important;
+            width: 50px !important;
+            height: 30px !important;
+            font-size: 12px !important;
         }
     </style>
     """,
@@ -87,14 +87,14 @@ df = get_data()
 # 📊 **食材一覧表示**
 if not df.empty:
     for _, row in df.iterrows():
-        col1, col2, col3 = st.columns([3, 1, 1])  # 🔹 数値入力欄をもっと小さく
+        col1, col2, col3 = st.columns([3, 1, 0.8])  # 🔹 削除ボタンの幅を調整
         col1.write(row["name"])
         quantity = col2.number_input("", min_value=0, value=row["quantity"], key=f"qty_{row['id']}", label_visibility="collapsed")
         col3.button("❌", key=f"delete_{row['id']}", on_click=delete_ingredient, args=(row["id"],))
 
 # ➕ **食材追加**
 with st.form("add_ingredient_form", clear_on_submit=True):
-    col1, col2, col3, col4 = st.columns([2.5, 2.5, 1, 1])  # 🔹 入力欄をさらにコンパクトに
+    col1, col2, col3, col4 = st.columns([3, 3, 1, 1])  # 🔹 入力欄の比率調整
     name = col1.text_input("", placeholder="食材名", max_chars=10, label_visibility="collapsed")
     category = col2.selectbox("", ["主食", "肉類", "野菜類", "その他"], label_visibility="collapsed")
     quantity = col3.number_input("", min_value=1, value=1, label_visibility="collapsed")
