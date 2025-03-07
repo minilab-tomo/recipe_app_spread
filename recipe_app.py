@@ -41,22 +41,84 @@ for index, row in data.iterrows():
     col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
     col1.text(row["name"])
     quantity = col2.number_input("", value=row["quantity"], key=f"qty_{index}", step=1, min_value=0)
-    if col3.button("-", key=f"dec_{index}"):
-        update_quantity(index, row["quantity"] - 1)
-    if col3.button("+", key=f"inc_{index}"):
-        update_quantity(index, row["quantity"] + 1)
-    if col4.button("❌", key=f"del_{index}"):
-        delete_ingredient(index)
-        st.experimental_rerun()
+    with col3:
+        st.button("-", key=f"dec_{index}", on_click=update_quantity, args=(index, row["quantity"] - 1))
+        st.button("+", key=f"inc_{index}", on_click=update_quantity, args=(index, row["quantity"] + 1))
+    with col4:
+        st.button("❌", key=f"del_{index}", on_click=delete_ingredient, args=(index,))
 
 st.subheader("新しい食材を追加")
-new_name = st.text_input("食材名")
-new_category = st.selectbox("カテゴリ", ["主食", "肉類", "野菜類", "その他"])
-new_quantity = st.number_input("数量", min_value=1, step=1)
+col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
+with col1:
+    new_name = st.text_input("", placeholder="食材名")
+with col2:
+    new_category = st.selectbox("", ["主食", "肉類", "野菜類", "その他"], index=0)
+with col3:
+    new_quantity = st.number_input("", min_value=1, step=1, value=1)
+with col4:
+    st.button("➕", on_click=add_ingredient, args=(new_name, new_quantity, new_category))
 
-if st.button("➕"):
-    add_ingredient(new_name, new_quantity, new_category)
-    st.experimental_rerun()
+
+
+# import streamlit as st
+# import gspread
+# from google.oauth2.service_account import Credentials
+# import pandas as pd
+# import json
+
+# # 🔑 Streamlit Secrets から Google 認証情報を取得
+# service_account_info = json.loads(st.secrets["GCP_CREDENTIALS"])
+# creds = Credentials.from_service_account_info(service_account_info, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+
+# # 📦 Google Sheets API に接続
+# client = gspread.authorize(creds)
+# SHEET_NAME = "食材管理"
+# WORKSHEET_NAME = "Stock"
+# sheet = client.open(SHEET_NAME).worksheet(WORKSHEET_NAME)
+
+# def get_data():
+#     """Google Sheets からデータを取得し、DataFrame に変換"""
+#     data = sheet.get_all_records()
+#     return pd.DataFrame(data)
+
+# def update_quantity(row_index, new_quantity):
+#     """Google Sheets の数量を更新"""
+#     sheet.update_cell(row_index + 2, 3, int(new_quantity))
+
+# def add_ingredient(name, quantity, category):
+#     """新しい食材を追加"""
+#     new_row = [name, int(quantity), category]
+#     sheet.append_row(new_row)
+
+# def delete_ingredient(row_index):
+#     """食材を削除"""
+#     sheet.delete_rows(row_index + 2)
+
+# # Streamlit UI
+# st.title("🥕 食材管理アプリ")
+
+# data = get_data()
+
+# for index, row in data.iterrows():
+#     col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
+#     col1.text(row["name"])
+#     quantity = col2.number_input("", value=row["quantity"], key=f"qty_{index}", step=1, min_value=0)
+#     if col3.button("-", key=f"dec_{index}"):
+#         update_quantity(index, row["quantity"] - 1)
+#     if col3.button("+", key=f"inc_{index}"):
+#         update_quantity(index, row["quantity"] + 1)
+#     if col4.button("❌", key=f"del_{index}"):
+#         delete_ingredient(index)
+#         st.experimental_rerun()
+
+# st.subheader("新しい食材を追加")
+# new_name = st.text_input("食材名")
+# new_category = st.selectbox("カテゴリ", ["主食", "肉類", "野菜類", "その他"])
+# new_quantity = st.number_input("数量", min_value=1, step=1)
+
+# if st.button("➕"):
+#     add_ingredient(new_name, new_quantity, new_category)
+#     st.experimental_rerun()
 
 
 
