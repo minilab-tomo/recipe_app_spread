@@ -71,11 +71,10 @@ st.markdown(
             font-size: 12px !important;
         }
         /* 🔹 削除ボタンを右側に配置 */
-        .stNumberInput {
+        .stColumns {
             display: flex;
-            flex-direction: row;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
         }
         /* 🔹 入力エリアを横並びにする */
         .stTextInput, .stSelectbox, .stNumberInput {
@@ -108,7 +107,7 @@ if not df.empty:
 
 # ➕ **食材追加**
 with st.form("add_ingredient_form", clear_on_submit=True):
-    col1, col2, col3, col4 = st.columns([3, 3, 2, 1])  # 📌 入力欄の比率調整
+    col1, col2, col3, col4 = st.columns([3, 3, 2, 2])  # 📌 入力欄の比率調整
     name = col1.text_input("", placeholder="食材名", max_chars=10, label_visibility="collapsed")
     category = col2.selectbox("", ["主食", "肉類", "野菜類", "その他"], label_visibility="collapsed")
     quantity = col3.number_input("", min_value=1, value=1, label_visibility="collapsed")
