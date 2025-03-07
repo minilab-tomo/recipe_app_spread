@@ -60,8 +60,8 @@ st.markdown(
     <style>
         /* 🔹 入力欄を小さくする */
         input[type="text"], select, input[type="number"] {
-            max-width: 50px !important; /* 幅を小さく */
-            height: 25px !important; /* 高さを小さく */
+            max-width: 80px !important; /* 幅を小さく */
+            height: 30px !important; /* 高さを小さく */
             font-size: 14px !important; /* 文字サイズ */
         }
         /* 🔹 ボタンのサイズ調整 */
@@ -77,6 +77,17 @@ st.markdown(
             align-items: center;
             justify-content: space-between;
         }
+        /* 🔹 入力エリアを横並びにする */
+        .stTextInput, .stSelectbox, .stNumberInput {
+            display: inline-block;
+            margin-right: 5px;
+        }
+        /* 🔹 追加ボタンをアイコン化 */
+        .stButton > button {
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+        }
     </style>
     """,
     unsafe_allow_html=True
@@ -90,7 +101,7 @@ df = get_data()
 # 📊 **食材一覧表示**
 if not df.empty:
     for _, row in df.iterrows():
-        col1, col2, col3 = st.columns([2, 2, 1])  # 📌 削除ボタンの幅調整
+        col1, col2, col3 = st.columns([3, 2, 1])  # 📌 削除ボタンを右側に配置
         col1.write(row["name"])
         quantity = col2.number_input("", min_value=0, value=row["quantity"], key=f"qty_{row['id']}", label_visibility="collapsed")
         col3.button("❌", key=f"delete_{row['id']}", on_click=delete_ingredient, args=(row["id"],))
